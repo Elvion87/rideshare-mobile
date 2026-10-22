@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { gjejUdhetimin } from "@/lib/udhetimet";
+import { connection } from "next/server";
+
+import { GabimDatabaze } from "@/components/GabimDatabaze";
+import { gjejUdhetimin, type Udhetim } from "@/lib/udhetimet";
 
 export default async function Kerkesa({
   params,
@@ -8,8 +11,15 @@ export default async function Kerkesa({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const udhetim = gjejUdhetimin(id);
+  await connection();
 
+  let udhetim: Udhetim | undefined;
+  try {
+    udhetim = await gjejUdhetimin(id);
+  } catch (error) {
+    console.error(`Gabim gjatë leximit të udhëtimit ${id} për kërkesën:`, error);
+    return <GabimDatabaze href="/" actionLabel="Kthehu te lista" />;
+  }
   if (!udhetim) {
     notFound();
   }

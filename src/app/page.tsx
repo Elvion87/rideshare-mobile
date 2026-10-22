@@ -1,7 +1,20 @@
-import { KartaUdhetimi } from "@/components/KartaUdhetimi";
-import { udhetimet } from "@/lib/udhetimet";
+import { connection } from "next/server";
 
-export default function Home() {
+import { KartaUdhetimi } from "@/components/KartaUdhetimi";
+import { GabimDatabaze } from "@/components/GabimDatabaze";
+import { lexoUdhetimet, type Udhetim } from "@/lib/udhetimet";
+
+export default async function Home() {
+  await connection();
+
+  let udhetimet: Udhetim[];
+  try {
+    udhetimet = await lexoUdhetimet();
+  } catch (error) {
+    console.error("Gabim gjatë leximit të listës së udhëtimeve:", error);
+    return <GabimDatabaze href="/" actionLabel="Provo përsëri" />;
+  }
+
   return (
     <main className="page-shell">
       <section className="intro">
@@ -23,13 +36,21 @@ export default function Home() {
             <p className="eyebrow">E MËRKURË · 7 TETOR</p>
             <h2 id="rides-heading">Nisjet e ardhshme</h2>
           </div>
-          <span className="section-heading__count">03 / 03</span>
+          <span className="section-heading__count">
+            {udhetimet.length} {udhetimet.length === 1 ? "udhëtim" : "udhëtime"}
+          </span>
         </div>
-        <div className="trip-list">
-          {udhetimet.map((udhetim) => (
-            <KartaUdhetimi key={udhetim.id} udhetim={udhetim} />
-          ))}
-        </div>
+        {udhetimet.length === 0 ? (
+          <p className="empty-state" role="status">
+            Nuk ka udhëtime për momentin.
+          </p>
+        ) : (
+          <div className="trip-list">
+            {udhetimet.map((udhetim) => (
+              <KartaUdhetimi key={udhetim.id} udhetim={udhetim} />
+            ))}
+          </div>
+        )}
         <p className="demo-note">
           Kërkesat në këtë demonstrim nuk krijojnë rezervime të vërteta.
         </p>
