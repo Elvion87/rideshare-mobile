@@ -52,7 +52,7 @@ export default async function Home() {
           </div>
         )}
         <p className="demo-note">
-          Kërkesat në këtë demonstrim nuk krijojnë rezervime të vërteta.
+          Kërkesat ruhen si provë mësimore në Neon; nuk dërgohet njoftim jashtë aplikacionit.
         </p>
       </section>
     </main>

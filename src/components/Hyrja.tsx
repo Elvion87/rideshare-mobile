@@ -6,9 +6,11 @@ import { signIn, signOut } from "next-auth/react";
 export function Hyrja({
   brenda,
   konfigurimiGati,
+  callbackUrl = "/panel",
 }: {
   brenda: boolean;
   konfigurimiGati: boolean;
+  callbackUrl?: string;
 }) {
   const [gabim, setGabim] = useState("");
   const [dukePritur, setDukePritur] = useState(false);
@@ -20,7 +22,7 @@ export function Hyrja({
       if (brenda) {
         await signOut({ callbackUrl: "/" });
       } else {
-        await signIn("github", { callbackUrl: "/panel" });
+        await signIn("github", { callbackUrl });
       }
     } catch (error) {
       console.error("Gabim gjatë nisjes së hyrjes me GitHub:", error);

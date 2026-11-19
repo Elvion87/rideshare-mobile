@@ -76,7 +76,7 @@ export default async function Detajet({
         />
       </section>
       <p className="demo-note demo-note--detail">
-        Ky është një shembull mësimor. Nuk dërgohet kërkesë reale.
+        Kërkesat ruhen si provë mësimore në Neon; nuk dërgohet njoftim jashtë aplikacionit.
       </p>
     </main>
   );

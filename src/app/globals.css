@@ -406,6 +406,95 @@ button {
   width: 100%;
 }
 
+.inline-link {
+  color: var(--green-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sync-panel {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #fbfcfa;
+  text-align: left;
+}
+
+.sync-panel__summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.sync-panel__summary div {
+  padding: 12px 8px 12px 0;
+}
+
+.sync-panel__summary dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.sync-panel__summary dd {
+  margin: 4px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.sync-panel__request,
+.sync-panel__requests {
+  display: grid;
+  margin-top: 14px;
+  gap: 10px;
+}
+
+.sync-panel__request > p,
+.sync-panel__requests > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sync-request {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sync-request > div {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.sync-request > div span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.sync-panel__status,
+.sync-panel__offline {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.sync-panel__status--offline,
+.sync-panel__offline {
+  color: var(--coral);
+}
+
+.sync-panel .form-message {
+  margin-top: 8px;
+}
+
 .button--outline {
   margin-top: 22px;
   border-color: var(--line);
@@ -652,6 +741,21 @@ button {
   margin-top: 28px;
 }
 
+.request-panel--live {
+  text-align: left;
+}
+
+.request-panel--live > .request-icon,
+.request-panel--live > .eyebrow,
+.request-panel--live > h1,
+.request-panel--live > p:not(.eyebrow) {
+  text-align: center;
+}
+
+.request-panel--live .sync-panel {
+  margin-top: 24px;
+}
+
 @media (max-width: 560px) {
   .site-header,
   .page-shell,
@@ -667,6 +771,10 @@ button {
 
   .site-header__tag {
     display: none;
+  }
+
+  .sync-request {
+    align-items: flex-start;
   }
 
   .header-panel-link {
