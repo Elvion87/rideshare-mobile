@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="sq">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#176b53">
+    <title>RideShare · Lista e ruajtur</title>
+    <style>
+      :root{font:16px/1.6 "Segoe UI",Arial,sans-serif;color:#182a2a;background:#f5f7f2}
+      body{margin:0}main{max-width:760px;margin:auto;padding:24px}
+      h1{font-size:clamp(30px,7vw,46px);line-height:1.1}
+      button{min-height:44px;padding:0 16px;border:0;border-radius:9px;color:#fff;background:#176b53;font:inherit;font-weight:700}
+      button:disabled{opacity:.65}.trip-card{margin:14px 0;padding:18px;border:1px solid #e3e9e2;border-radius:14px;background:#fff}
+      .source{padding:12px;border-left:4px solid #176b53;background:#e2f2e9}
+      .muted{color:#647574}*:focus-visible{outline:3px solid #176b53;outline-offset:3px}
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>RideShare AAB · Lexim publik</p>
+      <h1>Udhëtimet, edhe pa internet</h1>
+      <p id="source" class="source" role="status" aria-live="polite">Po lexojmë listën…</p>
+      <p class="muted">Ruajtur për herë të fundit: <time id="saved">—</time></p>
+      <button id="refresh" type="button">Rifresko listën</button>
+      <div id="trips"></div>
+    </main>
+    <script>
+      const source = document.querySelector("#source");
+      const saved = document.querySelector("#saved");
+      const trips = document.querySelector("#trips");
+      const refresh = document.querySelector("#refresh");
+
+      async function loadTrips() {
+        refresh.disabled = true;
+        source.textContent = "Po kërkojmë listën…";
+        try {
+          const response = await fetch("/api/udhetimet", { cache: "no-store" });
+          const data = await response.json();
+          if (!response.ok || !Array.isArray(data.trips)) {
+            throw new Error(data.error || "Lista nuk u lexua.");
+          }
+
+          trips.replaceChildren();
+          for (const trip of data.trips) {
+            const card = document.createElement("article");
+            card.className = "trip-card";
+            const title = document.createElement("h2");
+            title.textContent = `${trip.nisja} → ${trip.destinacioni}`;
+            const details = document.createElement("p");
+            details.textContent = `${trip.ora} · Takimi: ${trip.vendtakimi} · ${trip.vende} vende`;
+            card.append(title, details);
+            trips.append(card);
+          }
+
+          const timestamp = response.headers.get("x-rideshare-saved-at");
+          saved.textContent = timestamp
+            ? new Date(timestamp).toLocaleString("sq-AL")
+            : "Lexuar drejtpërdrejt; kopja ende nuk u ruajt.";
+          source.textContent =
+            response.headers.get("x-rideshare-source") === "cache"
+              ? "Lista e fundit e ruajtur · Mund të jetë vjetruar. Serveri nuk u arrit."
+              : "Lista erdhi nga serveri. Rifreskoje para çdo veprimi.";
+        } catch {
+          trips.replaceChildren();
+          source.textContent = "Ende nuk ka listë të ruajtur. Hape faqen me internet dhe provo përsëri.";
+          saved.textContent = "—";
+        } finally {
+          refresh.disabled = false;
+        }
+      }
+
+      refresh.addEventListener("click", loadTrips);
+      loadTrips();
+    </script>
+  </body>
+</html>

@@ -1,46 +1,96 @@
 # Rruga — Udhëtime për në AAB
 
-Një demonstrim mësimor i rrjedhës së bashkudhëtimit, i ndërtuar me Next.js App Router dhe TypeScript. Udhëtimet lexohen nga PostgreSQL në Neon. Të dhënat janë fiktive; aplikacioni nuk ruan rezervime, nuk kontakton shoferë dhe nuk përpunon pagesa.
-
-## Kërkesat
-
-- Node.js 20.9 ose më i ri
-- npm
+Projekt mësimor për bashkudhëtimet studentore, i ndërtuar me Next.js App Router, TypeScript dhe Neon PostgreSQL. Udhëtimet janë të dhëna fiktive; kërkesat për vende nuk krijojnë rezervime dhe vendtakimi i zgjedhur lokalisht nuk i dërgohet shoferit.
 
 ## Nisja lokale
 
-Në terminal, nga dosja kryesore e projektit:
+Kërkohen Node.js 20.9+ dhe npm.
 
 ```bash
 npm install
 ```
 
-Krijo `.env.local` pranë `package.json` duke kopjuar `.env.example`, pastaj vendos connection string-un tënd të Neon si `DATABASE_URL`. Mos e publiko këtë skedar dhe mos përdor prefiksin `NEXT_PUBLIC_`. Ekzekuto [schema.sql](./schema.sql) në SQL Editor të së njëjtës databazë.
+Nëse nuk ke `.env.local`, kopjo `.env.example` me atë emër. Nëse e ke tashmë, ruaje `DATABASE_URL` ekzistues dhe shto vetëm vlerat e munguara. Plotëso kredencialet private te `.env.local`; mos e publiko dhe mos përdor prefiksin `NEXT_PUBLIC_`.
+
+Variablat:
+
+- `DATABASE_URL`: connection string i Neon PostgreSQL.
+- `GITHUB_ID`, `GITHUB_SECRET`: kredencialet e GitHub OAuth App.
+- `NEXTAUTH_SECRET`: sekret i rastësishëm për nënshkrimin e sesionit.
+- `NEXTAUTH_URL`: `http://localhost:3000` për zhvillim lokal.
+
+Për GitHub OAuth App përdor:
+
+- Homepage URL: `http://localhost:3000`
+- Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
+
+Në Neon SQL Editor ekzekuto `schema.sql` për një bazë të re ose ekzekuto migrimet `schema-java05.sql` dhe `schema-java09.sql` me radhë në bazën ekzistuese. Pastaj:
 
 ```bash
 npm run dev
 ```
 
-Hap adresën që shfaq terminali, zakonisht [http://localhost:3000](http://localhost:3000). Për të ndalur serverin, shtyp `Ctrl+C`.
+Hap adresën që shfaq terminali, zakonisht [http://localhost:3000](http://localhost:3000).
 
-## Si ta testojë profesori
+## Aktivizimi i panelit të shoferit
 
-1. Në faqen kryesore, kontrollo që shfaqen tri udhëtimet e lexuara nga Neon.
-2. Hape faqen në pamjen mobile të shfletuesit (p.sh. gjerësi 375 px); kontrollo që kartat dhe butonat duken dhe nuk ka lëvizje horizontale.
-3. Në Neon SQL Editor ndrysho përkohësisht `ora` të udhëtimit `2` në `08:25`; rifresko listën dhe `/udhetimi/2` për të parë vlerën e re, pastaj riktheje në `08:15`.
-4. Në detaje, provo udhëtimin e tretë përmes URL-së `/udhetimi/3`; butoni **Nuk ka vende të lira** duhet të jetë i çaktivizuar.
-5. Hape `/udhetimi/99`; duhet të shfaqet **Udhëtimi nuk u gjet** dhe lidhja **Kthehu te lista**.
-6. Kthehu te `/udhetimi/2` dhe kliko **Kërko vend**. Duhet të shfaqet **Simulim: Në pritje**. Përdor lidhjen e kthimit për t'u kthyer te detajet; nga aty kthehu te lista.
-7. Për gjendjen bosh dhe gabimin e lidhjes, ndiq provat e raportit [java-04.md](./java-04.md).
+Identiteti vjen nga sesioni i verifikuar GitHub; roli dhe pronësia vijnë nga Neon. Përdoruesit e rinj krijohen fillimisht si udhëtarë. Hyr me GitHub dhe hap `/panel` një herë që profili yt të krijohet. Në Neon gjej ID-në numerike me:
 
-## Kontrolli teknik
+```sql
+SELECT github_id, emri, roli FROM profilet ORDER BY emri;
+```
+
+Cakto rolin dhe udhëtimin e provës te ID-ja jote, duke zëvendësuar tekstin e shembullit me ID-në tënde:
+
+```sql
+UPDATE profilet
+SET roli = 'shofer'
+WHERE github_id = 'VENDOS_ID_GITHUB';
+
+UPDATE udhetimet
+SET shofer_id = 'VENDOS_ID_GITHUB'
+WHERE id = '2';
+```
+
+Rifresko `/panel`. Vetëm udhëtimet që Neon cakton te shoferi i kyçur mund të ndryshohen. ID 1 i caktohet shoferit fiktiv `DEMO-SHOFER-2` për provën e refuzimit. Mos ndrysho rolin ose pronarin përmes kodit të shfletuesit.
+
+## Rrugët dhe veçoritë
+
+- `/`: lista e udhëtimeve publike nga Neon.
+- `/udhetimi/[id]`: detajet, zgjedhja lokale e vendtakimit dhe ruajtja e preferimit.
+- `/udhetimi/[id]/kerkesa`: demonstrim; nuk dërgon kërkesë reale.
+- `/panel`: hyrja me GitHub dhe ndryshimi i orës vetëm për udhëtimet e shoferit.
+- `/java-08-test`: faqe e pavarur për provat e vendtakimit; nuk kërkon hyrje, Neon apo sekrete.
+- `/api/udhetimet`: vetëm të dhënat publike të udhëtimeve; endpoint-i nuk kthen profile ose kredenciale.
+- `/offline.html`: lexues i kopjes publike të ruajtur në pajisje.
+
+Service worker-i ruan vetëm `/offline.html`, ikonat dhe përgjigjen publike të `/api/udhetimet`. Nuk ruan panelin, hyrjen, sesionet apo kërkesat. Të dhënat offline mund të jenë të vjetruara dhe nuk provojnë disponueshmërinë e vendeve.
+
+Vendtakimi mund të shkruhet manualisht ose mund të kërkohet vendndodhja pas klikimit dhe lejes së shfletuesit. Aplikacioni shfaq vetëm saktësinë e pozicionit; koordinatat nuk ruhen dhe nuk dërgohen. Preferimi kërkon hyrje, ruhet në Neon dhe kufizohet në një rresht për përdorues/udhëtim.
+
+## Provat
+
+1. Hape listën dhe `/udhetimi/2`; `/udhetimi/3` duhet të ketë veprimin e çaktivizuar, ndërsa `/udhetimi/99` duhet të shfaqë faqen e mungesës.
+2. Te `/java-08-test`, provo Biblioteka → Parkingu pa konfirmim, tekst vetëm me hapësira, refuzimin, suksesin dhe skadimin e lejes. Automatizimi i Javës 8 kërkon 37 m si vlerë të simuluar; prova reale varet nga shfletuesi/pajisja.
+3. Hape një herë `/` me internet, pastaj çaktivizo rrjetin për tab-in, rifresko dhe kontrollo kohën/burimin e kopjes offline.
+4. Hyr në GitHub, cakto ID-në e shoferit në Neon, ndrysho orën e udhëtimit 2 dhe provo që ndryshimi i ID-së në 1 refuzohet.
+5. Hyr dhe ruaj një udhëtim te të preferuarat. Rifresko; provo serverin e paarritshëm dhe klikimet e shpejta. Tabela SQL pengon kopjet.
+6. Përfundimi teknik:
 
 ```bash
 npm run build
 ```
 
-Struktura e faqeve ndjek adresat `/`, `/udhetimi/[id]` dhe `/udhetimi/[id]/kerkesa`. Të dhënat e udhëtimeve gjenden te `src/lib/udhetimet.ts`; lista përdor komponentin `src/components/KartaUdhetimi.tsx`.
+Provat që kërkojnë kredenciale GitHub ose lidhje reale Neon nuk mund të kryhen pa vlerat e tua private.
 
-## Raportet
+## Raportet javore
 
-Raportet e provave dhe përshkrimi i punës gjenden te [`java-03.md`](./java-03.md) dhe [`java-04.md`](./java-04.md).
+- [Java 3](./java-03.md)
+- [Java 4](./java-04.md)
+- [Java 5](./java-05.md)
+- [Java 6](./java-06.md)
+- [Java 7](./java-07.md)
+- [Java 8](./java-08.md)
+- [Java 9](./java-09.md)
+
+Raportet dallojnë qartë kontrollet e kodit nga provat që duhen kryer me OAuth/Neon real. Përfundimet e provave fizike ose online plotësohen pasi të konfigurohen kredencialet.

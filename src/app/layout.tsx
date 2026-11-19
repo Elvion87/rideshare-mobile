@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PwaRegister } from "@/components/PwaRegister";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,7 +22,9 @@ export default function RootLayout({
             <span>rruga<span className="brand__dot">.</span></span>
           </Link>
           <span className="site-header__tag">UDHËTIME PËR AAB</span>
+          <Link className="header-panel-link" href="/panel">Hyr / Paneli im</Link>
         </header>
+        <PwaRegister />
         {children}
         <footer className="site-footer">
           <span>Projekt mësimor · Të dhëna fiktive</span>

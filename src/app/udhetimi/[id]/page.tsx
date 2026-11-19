@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { GabimDatabaze } from "@/components/GabimDatabaze";
+import { Preferimi } from "@/components/Preferimi";
+import { Vendtakimi } from "@/components/Vendtakimi";
+import { getCurrentSession } from "@/lib/auth";
+import { lexoGjendjenPreferimit } from "@/lib/preferimet";
 import { gjejUdhetimin, type Udhetim } from "@/lib/udhetimet";
 
 export default async function Detajet({
@@ -14,8 +18,13 @@ export default async function Detajet({
   await connection();
 
   let udhetim: Udhetim | undefined;
+  let preferimi = { ruajtur: false, numer: 0 };
+  const session = await getCurrentSession();
   try {
     udhetim = await gjejUdhetimin(id);
+    if (udhetim && session?.user?.id) {
+      preferimi = await lexoGjendjenPreferimit(session.user.id, id);
+    }
   } catch (error) {
     console.error(`Gabim gjatë leximit të udhëtimit ${id}:`, error);
     return <GabimDatabaze href="/" actionLabel="Kthehu te lista" />;
@@ -49,6 +58,7 @@ export default async function Detajet({
             <dd>{udhetim.vende}</dd>
           </div>
         </dl>
+        <Vendtakimi udhetimLabel={`${udhetim.nisja} → ${udhetim.destinacioni}`} />
         {paVende ? (
           <button className="button button--muted button--wide" disabled>
             Nuk ka vende të lira
@@ -58,6 +68,12 @@ export default async function Detajet({
             Kërko vend <span aria-hidden="true">→</span>
           </Link>
         )}
+        <Preferimi
+          udhetimiId={udhetim.id}
+          fillimishtRuajtur={preferimi.ruajtur}
+          numerFillestar={preferimi.numer}
+          iKycur={Boolean(session?.user?.id)}
+        />
       </section>
       <p className="demo-note demo-note--detail">
         Ky është një shembull mësimor. Nuk dërgohet kërkesë reale.

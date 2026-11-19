@@ -48,3 +48,20 @@ export async function gjejUdhetimin(id: string): Promise<Udhetim | undefined> {
   const row = rows[0];
   return row ? toUdhetim(row) : undefined;
 }
+
+export async function lexoUdhetimetPerShofer(
+  githubId: string,
+): Promise<Udhetim[]> {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT id, nisja, destinacioni, ora, vendtakimi, vende
+    FROM udhetimet
+    WHERE shofer_id = ${githubId}
+      AND EXISTS (
+        SELECT 1 FROM profilet
+        WHERE github_id = ${githubId} AND roli = 'shofer'
+      )
+    ORDER BY id
+  `;
+  return rows.map(toUdhetim);
+}

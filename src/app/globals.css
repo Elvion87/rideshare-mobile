@@ -87,6 +87,18 @@ button {
   color: var(--muted);
 }
 
+.header-panel-link {
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.header-panel-link:hover,
+.back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .page-shell {
   width: min(100% - 48px, 1080px);
   margin: 0 auto;
@@ -407,6 +419,191 @@ button {
   background: var(--mint);
 }
 
+.auth-control {
+  margin: 0 0 22px;
+}
+
+.auth-note {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--muted);
+  background: #f7f8f5;
+  font-size: 13px;
+}
+
+.form-message {
+  min-height: 1.5em;
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.form-message--error {
+  color: var(--coral);
+}
+
+.owned-rides {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.owned-ride {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #fbfcfa;
+}
+
+.owned-ride h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.owned-ride > p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ride-editor {
+  margin-top: 16px;
+}
+
+.ride-editor label,
+.meeting-panel label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ride-editor__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.ride-editor input,
+.meeting-panel input {
+  min-height: 44px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid #cbd6cc;
+  border-radius: 8px;
+  color: var(--ink);
+  background: white;
+  font: inherit;
+}
+
+.ride-editor input:focus,
+.meeting-panel input:focus {
+  outline: 3px solid rgba(23, 107, 83, 0.18);
+  border-color: var(--green);
+}
+
+.meeting-panel,
+.favorite-panel {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fbfcfa;
+}
+
+.meeting-panel input {
+  width: 100%;
+}
+
+.meeting-actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  gap: 9px;
+}
+
+.meeting-actions .button {
+  min-height: 42px;
+}
+
+.confirmed-meeting {
+  margin: 15px 0 0;
+  font-size: 13px;
+}
+
+.confirmed-meeting strong,
+.location-accuracy {
+  color: var(--green-dark);
+}
+
+.location-accuracy {
+  min-height: 1.5em;
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.meeting-privacy {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.favorite-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.favorite-panel .eyebrow,
+.favorite-panel p {
+  margin: 0;
+}
+
+.favorite-panel > p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.favorite-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid var(--green);
+  border-radius: 9px;
+  color: var(--green-dark);
+  background: white;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.favorite-button span {
+  font-size: 21px;
+}
+
+.favorite-button:disabled {
+  border-color: var(--line);
+  background: var(--mint);
+  cursor: default;
+}
+
+.favorite-count strong {
+  color: var(--ink);
+}
+
+.pwa-notice {
+  margin: 8px auto;
+  width: min(100% - 48px, 1080px);
+  color: var(--coral);
+  font-size: 12px;
+}
+
 .demo-note--detail {
   text-align: center;
 }
@@ -463,11 +660,17 @@ button {
   }
 
   .site-header {
+    flex-wrap: wrap;
     height: 66px;
+    gap: 10px;
   }
 
   .site-header__tag {
-    font-size: 9px;
+    display: none;
+  }
+
+  .header-panel-link {
+    font-size: 11px;
   }
 
   .intro {
@@ -527,6 +730,20 @@ button {
   .detail-list div {
     grid-template-columns: 1fr;
     gap: 5px;
+  }
+
+  .meeting-panel,
+  .favorite-panel {
+    padding: 15px;
+  }
+
+  .meeting-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pwa-notice {
+    width: min(100% - 32px, 1080px);
   }
 }
 

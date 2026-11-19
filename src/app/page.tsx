@@ -33,7 +33,7 @@ export default async function Home() {
       <section className="rides" aria-labelledby="rides-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">E MËRKURË · 7 TETOR</p>
+            <p className="eyebrow">UDHËTIME PUBLIKE</p>
             <h2 id="rides-heading">Nisjet e ardhshme</h2>
           </div>
           <span className="section-heading__count">
