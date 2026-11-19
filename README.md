@@ -24,6 +24,15 @@ Për GitHub OAuth App përdor:
 - Homepage URL: `http://localhost:3000`
 - Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
 
+## Konfigurimi në Vercel
+
+Përdor një GitHub OAuth App të veçantë për prodhim, që hyrja lokale të vazhdojë të përdorë callback-un `localhost`:
+
+- Homepage URL: `https://rideshare-mobile-beta.vercel.app`
+- Authorization callback URL: `https://rideshare-mobile-beta.vercel.app/api/auth/callback/github`
+
+Në Vercel Project Settings → Environment Variables cakto për Production `DATABASE_URL` të së njëjtës bazë Neon ku janë ekzekutuar skemat, kredencialet `GITHUB_ID` dhe `GITHUB_SECRET` të aplikacionit OAuth të prodhimit, një `NEXTAUTH_SECRET` të rastësishëm dhe `NEXTAUTH_URL=https://rideshare-mobile-beta.vercel.app`. Pas ndryshimit të variablave, publiko një deployment të ri që ato të hyjnë në fuqi. Mos i vendos sekretet në Git.
+
 Në Neon SQL Editor ekzekuto `schema.sql` për një bazë të re ose ekzekuto migrimet `schema-java05.sql` dhe `schema-java09.sql` me radhë në bazën ekzistuese. Pastaj:
 
 ```bash
